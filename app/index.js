@@ -26,7 +26,7 @@ let main = async function () {
       filenameNoExt = filenameNoExt.slice(0, filenameNoExt.lastIndexOf('.'))
     }
 
-    let tmpFile = cleanHTML(file)
+    let tmpFile = await cleanHTML(file)
 
     // https://stackoverflow.com/a/75518220
     // pandoc --standalone --embed-resources --metadata pagetitle="title" index.md -o index-out.html
