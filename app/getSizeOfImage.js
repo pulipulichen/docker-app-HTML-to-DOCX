@@ -70,8 +70,10 @@ function getImageDimensions(base64Image) {
 
 function extractSvgDimensions(base64Svg) {
   return new Promise((resolve, reject) => {
+    const base64Data = base64Image.replace(/^data:image\/svg\+xml,/, '');
+    
     // Convert the base64 string to SVG text
-    const svgBuffer = Buffer.from(base64Svg, 'base64');
+    const svgBuffer = Buffer.from(base64Data, 'base64');
     const svgText = svgBuffer.toString('utf-8');
 
     // Parse the SVG to get width and height
