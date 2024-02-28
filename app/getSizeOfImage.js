@@ -2,7 +2,9 @@ const request = require('request');
 const sizeOf = require('image-size');
 
 const { promisify } = require('util');
-const sharp = require('sharp');
+const fs = require('fs');
+const { resolve } = require('path');
+const { createCanvas, loadImage } = require('canvas');
 
 module.exports = function(imageUrl) {
   if (imageUrl.startsWith('data:image/')) {
@@ -31,16 +33,28 @@ module.exports = function(imageUrl) {
   })
 }
 
+
+// Function to get the dimensions of a base64 encoded image
 async function getImageDimensionsFromBase64(base64String) {
   // Remove header from base64 string
   const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
   // Decode base64 data
   const buffer = Buffer.from(base64Data, 'base64');
-  
+
+  // Load image from buffer
+  const img = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = (err) => reject(err);
+      image.src = 'data:image/png;base64,' + base64Data;
+  });
+
   try {
-      // Use sharp library to read image dimensions
-      const metadata = await sharp(buffer).metadata();
-      const { width, height } = metadata;
+      // Wait for image to load
+      const image = await img;
+
+      // Get dimensions
+      const { width, height } = image;
       return { width, height };
   } catch (error) {
       console.error('Error reading image:', error);
