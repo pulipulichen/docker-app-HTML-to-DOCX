@@ -3,6 +3,8 @@ const sizeOf = require('image-size');
 const sizeOfBuffer = require('buffer-image-size');
 
 module.exports = function(imageUrl) {
+  console.log({imageUrl})
+
   if (imageUrl.startsWith('data:image/')) {
     return getImageDimensions(imageUrl)
   }
