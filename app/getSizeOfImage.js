@@ -5,6 +5,12 @@ const sizeOfBuffer = require('buffer-image-size');
 module.exports = function(imageUrl) {
   console.log({imageUrl})
 
+  if (imageUrl.startsWith('data:,')) {
+    return {
+      width: 0,
+      height: 0
+    }
+  }
   if (imageUrl.startsWith('data:image/')) {
     return getImageDimensions(imageUrl)
   }
