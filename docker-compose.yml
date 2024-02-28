@@ -3,7 +3,7 @@ services:
   app:
     build: .
     tty: true
-    command: pandoc --standalone --embed-resources=true /app/input2.html -o /app/output.docx
+    # command: pandoc --standalone --embed-resources=true /app/input2.html -o /app/output.docx
     volumes: 
       - ./app:/app/
       - ./input:/input/
