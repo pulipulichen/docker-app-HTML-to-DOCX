@@ -1,5 +1,6 @@
 const request = require('request');
 const sizeOf = require('image-size');
+const sizeOfBuffer = require('buffer-image-size');
 
 module.exports = function(imageUrl) {
   if (imageUrl.startsWith('data:image/')) {
@@ -36,7 +37,7 @@ function getImageDimensions(base64Image) {
   const imageBuffer = Buffer.from(base64Data, 'base64');
 
   // Get the dimensions of the image
-  const dimensions = sizeOf(imageBuffer);
+  const dimensions = sizeOfBuffer(imageBuffer);
 
   // Return dimensions as a JSON object
   return {
