@@ -33,6 +33,8 @@ function getImageDimensions(base64Image) {
   // Extract the base64 data from the string (remove the data URL part)
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
 
+  console.log(base64Data.slice(0, 50));
+
   // Convert the base64 string to a Buffer
   const imageBuffer = Buffer.from(base64Data, 'base64');
 
