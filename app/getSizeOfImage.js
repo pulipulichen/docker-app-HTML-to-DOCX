@@ -71,11 +71,17 @@ function getImageDimensions(base64Image) {
 function extractSvgDimensions(base64Svg) {
   return new Promise((resolve, reject) => {
     const base64Data = base64Svg.replace(/^data:image\/svg\+xml,/, '').trim();
-    console.log(base64Data);
+    // console.log(base64Data);
     // Convert the base64 string to SVG text
-    const svgBuffer = Buffer.from(base64Data, 'base64');
-    const svgText = svgBuffer.toString('utf-8');
-
+    let svgText
+    if (base64Data.startsWith('<svg')) {
+      svgText = base64Data
+    }
+    else {
+      const svgBuffer = Buffer.from(base64Data, 'base64');
+      svgText = svgBuffer.toString('utf-8');
+    }
+      
     // Parse the SVG to get width and height
     xml2js.parseString(svgText, (err, result) => {
       if (err) {
