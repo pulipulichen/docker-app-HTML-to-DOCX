@@ -2,7 +2,9 @@ const request = require('request');
 const sizeOf = require('image-size');
 const sizeOfBuffer = require('buffer-image-size');
 
-module.exports = function(imageUrl) {
+const xml2js = require('xml2js');
+
+module.exports = async function(imageUrl) {
   console.log({imageUrl})
 
   if (imageUrl.startsWith('data:,')) {
@@ -11,7 +13,10 @@ module.exports = function(imageUrl) {
       height: 0
     }
   }
-  if (imageUrl.startsWith('data:image/')) {
+  else if (imageUrl.startsWith('data:image/svg+xml,')) {
+    return await extractSvgDimensions(imageUrl)
+  }
+  else if (imageUrl.startsWith('data:image/')) {
     return getImageDimensions(imageUrl)
   }
   return new Promise(function(resolve, reject) {
@@ -61,4 +66,37 @@ function getImageDimensions(base64Image) {
       width: dimensions.width,
       height: dimensions.height
   };
+}
+
+function extractSvgDimensions(base64Svg) {
+  return new Promise((resolve, reject) => {
+    // Convert the base64 string to SVG text
+    const svgBuffer = Buffer.from(base64Svg, 'base64');
+    const svgText = svgBuffer.toString('utf-8');
+
+    // Parse the SVG to get width and height
+    xml2js.parseString(svgText, (err, result) => {
+      if (err) {
+        console.error('Error parsing SVG:', err);
+        return;
+      }
+
+      const svgRoot = result.svg;
+      let width = svgRoot.$.width || 'unknown';
+      let height = svgRoot.$.height || 'unknown';
+
+      // Attempt to extract dimensions from the viewbox if width or height are missing
+      if (width === 'unknown' || height === 'unknown') {
+        if (svgRoot.$.viewBox) {
+          const viewboxValues = svgRoot.$.viewBox.split(' ');
+          if (width === 'unknown') width = viewboxValues[2]; // Assumes viewbox is "min-x min-y width height"
+          if (height === 'unknown') height = viewboxValues[3];
+        }
+      }
+
+      // console.log(JSON.stringify({ width, height }));
+      resolve({ width, height })
+    });
+  })
+    
 }
